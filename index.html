@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Laporan Lab Tepung</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; color: #333; }
+        h2 { text-align: center; color: #007bff; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        input:focus, select:focus { border-color: #007bff; outline: none; }
+        
+        /* Gaya Tombol */
+        .btn-salin { background-color: #007bff; color: white; padding: 12px 15px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        .btn-salin:hover { background-color: #0056b3; }
+        
+        .btn-wa { display: none; text-align: center; text-decoration: none; background-color: #25D366; color: white; padding: 12px 15px; border-radius: 6px; font-size: 16px; font-weight: bold; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-wa:hover { background-color: #128C7E; }
+        
+        .alert-success { display: none; background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h2>🧪 Input Hasil Uji Lab</h2>
+    
+    <!-- Notifikasi berhasil salin teks -->
+    <div id="notif" class="alert-success">📋 Teks laporan BERHASIL DISALIN!<br>Silakan klik tombol hijau di bawah untuk buka grup WA.</div>
+
+    <div class="form-group">
+        <label>Jenis Tepung / Produk:</label>
+        <input type="text" id="produk" placeholder="Contoh: Cakra Kembar">
+    </div>
+    
+    <div class="form-group">
+        <label>Kadar Protein (%):</label>
+        <input type="number" step="0.1" id="protein" placeholder="Contoh: 13.5">
+    </div>
+    
+    <div class="form-group">
+        <label>Kadar Air / Moisture (%):</label>
+        <input type="number" step="0.1" id="moisture" placeholder="Contoh: 12.0">
+    </div>
+
+    <div class="form-group">
+        <label>Status:</label>
+        <select id="status">
+            <option value="PASSED ✅">PASSED</option>
+            <option value="REJECT ❌">REJECT</option>
+        </select>
+    </div>
+
+    <!-- LANGKAH 1: Tombol untuk Memproses & Menyalin Teks -->
+    <button class="btn-salin" onclick="prosesLaporan()">1. Proses & Salin Teks</button>
+
+    <!-- LANGKAH 2: Tombol WhatsApp Resmi (Akan muncul setelah tombol 1 diklik) -->
+    <a id="tombolWA" class="btn-wa" href="https://chat.whatsapp.com/KJLwVEjkfq0KL8EJ7YWN4o">2. Buka Grup WhatsApp</a>
+
+    <script>
+        function prosesLaporan() {
+            var produk = document.getElementById('produk').value;
+            var protein = document.getElementById('protein').value;
+            var moisture = document.getElementById('moisture').value;
+            var status = document.getElementById('status').value;
+
+            if (!produk || !protein || !moisture) {
+                alert("Mohon isi semua data laporan terlebih dahulu!");
+                return;
+            }
+
+            // Format teks laporan
+            var teks = "*LAPORAN HASIL UJI LAB*\n" +
+                       "-----------------------------\n" +
+                       "🌾 *Produk:* " + produk + "\n" +
+                       "🧪 *Protein:* " + protein + "%\n" +
+                       "💧 *Moisture:* " + moisture + "%\n" +
+                       "📊 *Status:* " + status + "\n" +
+                       "-----------------------------\n" +
+                       "_(Foto bukti uji dilampirkan)_";
+
+            // Mekanisme salin teks yang aman untuk semua jenis browser HP
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(teks);
+            } else {
+                var dummy = document.createElement("textarea");
+                document.body.appendChild(dummy);
+                dummy.value = teks;
+                dummy.select();
+                dummy.setSelectionRange(0, 99999);
+                document.execCommand("copy");
+                document.body.removeChild(dummy);
+            }
+
+            // Tampilkan notifikasi sukses
+            document.getElementById("notif").style.display = "block";
+
+            // Munculkan tombol kedua (Buka Grup WhatsApp)
+            document.getElementById("tombolWA").style.display = "block";
+        }
+    </script>
+
+</body>
+</html>
