@@ -8,10 +8,16 @@
         h2 { text-align: center; color: #007bff; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
-        input:focus, select:focus { border-color: #007bff; outline: none; }
-        button { background-color: #25D366; color: white; padding: 12px 15px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        button:hover { background-color: #128C7E; }
+        input, select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; font-family: Arial, sans-serif; }
+        input:focus, select:focus, textarea:focus { border-color: #007bff; outline: none; }
+        
+        /* Gaya Tombol */
+        .btn-salin { background-color: #007bff; color: white; padding: 12px 15px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        .btn-salin:hover { background-color: #0056b3; }
+        
+        .btn-wa { display: none; text-align: center; text-decoration: none; background-color: #25D366; color: white; padding: 12px 15px; border-radius: 6px; font-size: 16px; font-weight: bold; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-wa:hover { background-color: #128C7E; }
+        
         .alert-success { display: none; background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; font-weight: bold; }
     </style>
 </head>
@@ -19,55 +25,91 @@
 
     <h2>🧪 Input Hasil Uji Lab</h2>
     
-    <div id="notif" class="alert-success">📋 Teks laporan disalin! Membuka Grup WA...</div>
+    <div id="notif" class="alert-success">📋 Teks laporan BERHASIL DISALIN!<br>Silakan klik tombol hijau di bawah untuk buka grup WA.</div>
 
     <div class="form-group">
-        <label>Jenis Tepung / Produk:</label>
-        <input type="text" id="produk" placeholder="Contoh: Cakra Kembar">
-    </div>
-    
-    <div class="form-group">
-        <label>Kadar Protein (%):</label>
-        <input type="number" step="0.1" id="protein" placeholder="Contoh: 13.5">
-    </div>
-    
-    <div class="form-group">
-        <label>Kadar Air / Moisture (%):</label>
-        <input type="number" step="0.1" id="moisture" placeholder="Contoh: 12.0">
+        <label>Jenis Produk:</label>
+        <select id="produk">
+            <option value="">-- Pilih Produk --</option>
+            <option value="Salt">Salt</option>
+            <option value="CB-W0371C">CB-W0371C</option>
+            <option value="TS40013-2 2260706">TS40013-2 2260706</option>
+        </select>
     </div>
 
     <div class="form-group">
-        <label>Status:</label>
+        <label>Tahapan Proses:</label>
+        <select id="proses">
+            <option value="">-- Pilih Tahapan --</option>
+            <option value="Awal">Awal</option>
+            <option value="Tengah">Tengah</option>
+            <option value="Akhir">Akhir</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>Jenis Pengujian:</label>
+        <select id="uji">
+            <option value="">-- Pilih Parameter Uji --</option>
+            <option value="PH">PH</option>
+            <option value="Texture">Texture</option>
+            <option value="Moisture">Moisture</option>
+            <option value="Color">Color</option>
+            <option value="Sisa Ayak">Sisa Ayak</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Nilai Pengujian (Angka/Detail):</label>
+        <input type="text" id="nilai_uji" placeholder="Contoh: 6.5 / 12.5% / Halus">
+    </div>
+
+    <div class="form-group">
+        <label>Hasil Pengujian (Kesimpulan):</label>
+        <textarea id="hasil_uji" rows="2" placeholder="Contoh: Memenuhi standar mutu produksi."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Status Akhir:</label>
         <select id="status">
             <option value="PASSED ✅">PASSED</option>
             <option value="REJECT ❌">REJECT</option>
         </select>
     </div>
 
-    <button onclick="kirimGrupWA()">Salin & Buka Grup WhatsApp</button>
+    <button class="btn-salin" onclick="prosesLaporan()">1. Proses & Salin Teks</button>
+
+    <a id="tombolWA" class="btn-wa" href="https://chat.whatsapp.com/KJLwVEjkfq0KL8EJ7YWN4o">2. Buka Grup WhatsApp</a>
 
     <script>
-        function kirimGrupWA() {
+        function prosesLaporan() {
             var produk = document.getElementById('produk').value;
-            var protein = document.getElementById('protein').value;
-            var moisture = document.getElementById('moisture').value;
+            var proses = document.getElementById('proses').value;
+            var uji = document.getElementById('uji').value;
+            var nilai_uji = document.getElementById('nilai_uji').value;
+            var hasil_uji = document.getElementById('hasil_uji').value;
             var status = document.getElementById('status').value;
 
-            if (!produk || !protein || !moisture) {
-                alert("Mohon isi semua data laporan terlebih dahulu!");
+            // Validasi agar pilihan dropdown dan input tidak kosong
+            if (!produk || !proses || !uji || !nilai_uji || !hasil_uji) {
+                alert("Mohon lengkapi semua pilihan dan data laporan terlebih dahulu!");
                 return;
             }
 
-            var teks = "*LAPORAN HASIL UJI LAB*\n" +
-                       "-----------------------------\n" +
-                       "🌾 *Produk:* " + produk + "\n" +
-                       "🧪 *Protein:* " + protein + "%\n" +
-                       "💧 *Moisture:* " + moisture + "%\n" +
-                       "📊 *Status:* " + status + "\n" +
-                       "-----------------------------\n" +
-                       "_(Foto bukti uji dilampirkan)_";
+            // Format teks laporan otomatis (Lebih lengkap dan detail)
+            var teks = "*🧪 LAPORAN HASIL UJI LABORATORIUM*\n" +
+                       "-----------------------------------------\n" +
+                       "🌾 *Jenis Produk :* " + produk + "\n" +
+                       "🔄 *Tahapan Proses:* " + proses + "\n" +
+                       "📊 *Jenis Uji     :* " + uji + "\n" +
+                       "🔢 *Nilai Uji     :* " + nilai_uji + "\n" +
+                       "📝 *Hasil/Catatan :* " + hasil_uji + "\n" +
+                       "-----------------------------------------\n" +
+                       "⚠️ *Status Akhir  :* *" + status + "*\n" +
+                       "-----------------------------------------\n" +
+                       "_(Foto bukti pengujian dilampirkan)_";
 
-            // Proses salin teks (menggunakan API modern clipboard jika didukung browser)
+            // Mekanisme salin teks aman untuk mobile browser
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(teks);
             } else {
@@ -80,12 +122,9 @@
                 document.body.removeChild(dummy);
             }
 
-            var notif = document.getElementById("notif");
-            notif.style.display = "block";
-
-            // PERBAIKAN: Menggunakan format intensif membuka aplikasi langsung tanpa jeda yang diblokir browser
-            // Kita arahkan ke domain whatsapp resmi yang memaksa HP membuka aplikasi WA mereka
-            window.location.replace("https://chat.whatsapp.com/KJLwVEjkfq0KL8EJ7YWN4o");
+            // Tampilkan notifikasi dan aktifkan tombol WA
+            document.getElementById("notif").style.display = "block";
+            document.getElementById("tombolWA").style.display = "block";
         }
     </script>
 
